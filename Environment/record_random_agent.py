@@ -34,4 +34,4 @@ for step in range(100):
 renderer.close()
 
 # Save as GIF
-imageio.mimsave("fish_agent_random.gif", frames, duration=0.2)
+imageio.mimsave("fish_agent_random.gif", frames, duration=5)

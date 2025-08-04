@@ -43,7 +43,7 @@ model.learn(total_timesteps=100000, callback=eval_callback)
 
 # Save the model
 os.makedirs("models/dqn", exist_ok=True)
-model.save("models/dqn/fish_dqn_model")
+model.save("models/dqn/fish_dqn_model1")
 
 # Evaluate
 mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
