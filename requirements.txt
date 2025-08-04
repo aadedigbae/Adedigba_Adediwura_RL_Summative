@@ -1,4 +1,3 @@
-absl-py
 ale-py
 anyio
 argon2-cffi
@@ -100,16 +99,12 @@ pytest
 python-dateutil
 python-json-logger
 pytz
-pywin32
-pywinpty
 PyYAML
 pyzmq
 referencing
 requests
 rfc3339-validator
 rfc3986-validator
-rfc3987-syntax
-rich
 rpds-py
 seaborn
 Send2Trash
