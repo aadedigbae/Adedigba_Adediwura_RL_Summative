@@ -29,7 +29,7 @@ def record_agent(env, model=None, gif_name="agent.gif", max_steps=100):
 
         obs, reward, terminated, truncated, info = env.step(action)
 
-        renderer.render()
+        renderer.render(step=step, reward=reward)
         surface = pygame.display.get_surface()
         frame_array = pygame.surfarray.array3d(surface)
         frame_array = frame_array.transpose([1, 0, 2])
@@ -42,7 +42,7 @@ def record_agent(env, model=None, gif_name="agent.gif", max_steps=100):
                 obs, _ = obs
 
     renderer.close()
-    imageio.mimsave(gif_name, frames, duration=0.2)
+    imageio.mimsave(gif_name, frames, duration=0.7)
     print(f"✅ Saved: {gif_name}")
 
 def load_model(path, model_type):

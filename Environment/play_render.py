@@ -21,7 +21,7 @@ for step in range(200):
 
     print(f"[Step {step}] Action: {action}, Reward: {reward:.2f}, Info: {info}")
 
-    renderer.render()
+    renderer.render(step=step, reward=reward)
     time.sleep(0.3)
 
     if done:

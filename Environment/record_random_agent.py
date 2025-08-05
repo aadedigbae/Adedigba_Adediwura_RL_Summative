@@ -19,8 +19,8 @@ for step in range(100):
     obs, reward, terminated, truncated, info = env.step(action)
     done = terminated or truncated
 
-    renderer.render()
-
+    renderer.render(step=step, reward=reward)
+    
     # Save frame
     frame_surface = pygame.display.get_surface()
     frame_array = pygame.surfarray.array3d(frame_surface)

@@ -5,7 +5,6 @@
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
-import random
 
 class FishFeedingEnv(gym.Env):
     """
@@ -21,8 +20,7 @@ class FishFeedingEnv(gym.Env):
         self.max_steps = 50
         self.action_space = spaces.Discrete(6)  # 0=up, 1=down, 2=left, 3=right, 4=feed, 5=skip
 
-        # Observation space: 5x5 grid of fish hunger levels (0 or 1), water quality, agent position
-        # We'll use a flat array to represent the whole state
+        # Observation space: hunger + water quality + agent x/y (all normalized)
         self.observation_space = spaces.Box(
             low=0, high=1, shape=(self.grid_size * self.grid_size + 3,), dtype=np.float32
         )
@@ -34,6 +32,7 @@ class FishFeedingEnv(gym.Env):
         self.agent_pos = [0, 0]  # Start in top-left corner
         self.water_quality = 1.0  # Perfect water quality
         self.steps = 0
+        self.fish_fed_count = 0  # ✅ Track how many fish were fed
 
         # Fish hunger: 1 = hungry, 0 = not hungry
         self.fish_hunger = np.random.choice([0, 1], size=(self.grid_size, self.grid_size))
@@ -53,32 +52,33 @@ class FishFeedingEnv(gym.Env):
 
     def step(self, action):
         self.steps += 1
-        reward = -1  # Default small penalty to discourage idle movement
+        reward = -1  # Small default penalty
         terminated = False
 
-        # Move agent
-        if action == 0 and self.agent_pos[1] > 0:
-            self.agent_pos[1] -= 1  # Up
-        elif action == 1 and self.agent_pos[1] < self.grid_size - 1:
-            self.agent_pos[1] += 1  # Down
-        elif action == 2 and self.agent_pos[0] > 0:
-            self.agent_pos[0] -= 1  # Left
-        elif action == 3 and self.agent_pos[0] < self.grid_size - 1:
-            self.agent_pos[0] += 1  # Right
+        # Move
+        if action == 0 and self.agent_pos[1] > 0:  # Up
+            self.agent_pos[1] -= 1
+        elif action == 1 and self.agent_pos[1] < self.grid_size - 1:  # Down
+            self.agent_pos[1] += 1
+        elif action == 2 and self.agent_pos[0] > 0:  # Left
+            self.agent_pos[0] -= 1
+        elif action == 3 and self.agent_pos[0] < self.grid_size - 1:  # Right
+            self.agent_pos[0] += 1
         elif action == 4:  # Feed
             x, y = self.agent_pos
             if self.fish_hunger[y][x] == 1:
                 reward = 10  # Correct feeding
                 self.fish_hunger[y][x] = 0
+                self.fish_fed_count += 1  # ✅ Count this feeding
             else:
-                reward = -5  # Overfeeding penalty
+                reward = -5  # Overfeeding
                 self.water_quality -= 0.1
         elif action == 5:  # Skip feed
             x, y = self.agent_pos
             if self.fish_hunger[y][x] == 1:
-                reward = -3  # Skipped feeding a hungry fish
+                reward = -3  # Skipped feeding
 
-        # Termination conditions
+        # Termination Conditions
         if self.steps >= self.max_steps:
             terminated = True
         if self.water_quality <= 0.4:
@@ -100,4 +100,5 @@ class FishFeedingEnv(gym.Env):
         print("Tank State (F = Hungry Fish, A = Agent)")
         for row in grid:
             print(' '.join(row))
-        print(f"Water Quality: {self.water_quality:.2f}\n")
+        print(f"Water Quality: {self.water_quality:.2f}")
+        print(f"Fish Fed So Far: {self.fish_fed_count}\n")
